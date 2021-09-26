@@ -13,7 +13,7 @@ public class GameController : MonoBehaviour
 
     public float m_enemySpawnDelay = 0.0f;
     private float timeOfLastEnemySpawn = 0;
-    private bool enemySpawnAvailable = true;
+    private bool enemySpawnBlocked = false;
 
     private List<Unit> unitsInPlay = new List<Unit>();
     void Start()
@@ -42,7 +42,7 @@ public class GameController : MonoBehaviour
 
     private void TrySpawnEnemy()
     {
-        if (Time.time < timeOfLastEnemySpawn + m_enemySpawnDelay && enemySpawnAvailable)
+        if (Time.time < timeOfLastEnemySpawn + m_enemySpawnDelay || enemySpawnBlocked)
         {
             return;
         }
@@ -63,7 +63,7 @@ public class GameController : MonoBehaviour
         {
             unit.TakeDamage(500);
         }
-        enemySpawnAvailable = false;
+        enemySpawnBlocked = true;
         //Do some UI shit
     }
 
