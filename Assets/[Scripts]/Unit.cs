@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Unit : MonoBehaviour, IDamageable
 {
+    public UnitType m_type;
+
     [SerializeField]
     private Animator m_animator;
 
@@ -24,6 +26,9 @@ public class Unit : MonoBehaviour, IDamageable
     [SerializeField]
     private GameObject m_healthBar;
 
+    [SerializeField]
+    private AudioSource m_audio;
+
     public int m_currentHealth;
 
     public bool m_friendly;
@@ -39,6 +44,7 @@ public class Unit : MonoBehaviour, IDamageable
         m_currentHealth = m_maxHealth;
         m_animator = GetComponent<Animator>();
         m_collider = GetComponent<CapsuleCollider2D>();
+        m_audio = GetComponent<AudioSource>();
         m_healthBar = transform.Find("HealthBar").gameObject;
         m_healthBar.transform.localScale = new Vector3(m_healthbarMaxWidth, m_healthBar.transform.localScale.y, m_healthBar.transform.localScale.z);
     }
@@ -55,18 +61,13 @@ public class Unit : MonoBehaviour, IDamageable
         int layerMask = 1 << LayerMask.NameToLayer(m_friendly ? "Enemies" : "Friendlies");
         RaycastHit2D hit = Physics2D.Raycast(transform.position, (m_friendly ? Vector3.right : Vector3.left), m_attackRange, layerMask);
         Debug.DrawLine(transform.position, (m_friendly ? transform.position + Vector3.right * m_attackRange : transform.position + Vector3.left * m_attackRange), GameProperties.Instance.textColors[(int)TextType.INVALID]);
-        //check distance to unit in front to avoid bunching up
-        m_collider.enabled = false;
-        int layerMaskFriendly = 1 << LayerMask.NameToLayer(m_friendly ? "Friendlies" : "Enemies");
-        RaycastHit2D hitFriendly = Physics2D.Raycast(transform.position, (m_friendly ? Vector3.right : Vector3.left), 0.4f, layerMaskFriendly);
-        Debug.DrawLine(transform.position, (m_friendly ? transform.position + Vector3.right * 0.4f : transform.position + Vector3.left * 0.4f), GameProperties.Instance.textColors[(int)TextType.NEUTRAL]);
-        m_collider.enabled = true;
+        
         if (hit)
         {
             currentTarget = hit.transform.GetComponent<IDamageable>();
             Attack();
         }
-        else if (!hitFriendly ||  hitFriendly.transform.CompareTag("Respawn"))
+        else
             Move();
         m_animator.SetBool("Moving", isMoving);
     }
@@ -85,7 +86,7 @@ public class Unit : MonoBehaviour, IDamageable
         {
             timeSinceLastAttack = 0;
             m_animator.SetTrigger("Attack");
-            //todo: audio
+            m_audio.PlayOneShot(GameProperties.Instance.gunSFX[(int)m_type]);
             currentTarget.TakeDamage(m_attackDamage);
             currentTarget = null;
         }
@@ -112,7 +113,7 @@ public class Unit : MonoBehaviour, IDamageable
     {
         if (!m_friendly)
         {
-            FindObjectOfType<GameController>().m_playerFunds += Random.Range(10, 100);
+            FindObjectOfType<GameController>().m_playerFunds += Random.Range(25, 150);
         }
         dead = true;
         GetComponent<CapsuleCollider2D>().enabled = false;

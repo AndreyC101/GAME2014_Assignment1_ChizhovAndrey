@@ -8,10 +8,11 @@ public class HomeBase : MonoBehaviour, IDamageable
     public float m_maxBaseHealth = 150;
     private float m_baseHealth;
 
-    public Image m_healthBar;
-    private Image m_healthBarFill;
+    public Transform m_healthBar;
+    private Transform m_healthBarFill;
 
     private GameController m_game;
+    public bool m_friendly;
 
     [SerializeField]
     private MeshRenderer m_hqSign;
@@ -20,17 +21,16 @@ public class HomeBase : MonoBehaviour, IDamageable
     {
         m_game = FindObjectOfType<GameController>();
         m_baseHealth = m_maxBaseHealth;
-        m_healthBarFill = m_healthBar.transform.Find("HealthBar").GetComponent<Image>();
+        m_healthBarFill = m_healthBar.transform.Find("HealthBar");
 
         m_hqSign.sortingLayerName = "Friendlies";
         m_hqSign.sortingOrder = 3;
     }
 
-    void UpdateUI()
+    void UpdateUI() //TODOOOOOO
     {
         float fillPerc = m_baseHealth / m_maxBaseHealth;
-        RectTransform maxSize = m_healthBar.rectTransform;
-        m_healthBarFill.rectTransform.sizeDelta = new Vector2(maxSize.rect.width * fillPerc, maxSize.rect.height);
+        m_healthBarFill.localScale = new Vector3(fillPerc, m_healthBarFill.localScale.y, 1.0f);
     }
     public bool TakeDamage(int incomingDamage)
     {
@@ -45,8 +45,8 @@ public class HomeBase : MonoBehaviour, IDamageable
 
     public void HandleDestruction()
     {
-        m_healthBarFill.enabled = false;
-        m_game.OnBaseDestroyed();
+        m_healthBarFill.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+        m_game.OnBaseDestroyed(m_friendly);
     }
 
     public void ClearFromField()

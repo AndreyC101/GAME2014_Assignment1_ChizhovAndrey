@@ -7,6 +7,8 @@ public enum UnitType
 {
     COMMANDO,
     SCOUT,
+    MARKSMAN,
+    HEAVY,
     NUM_UNIT_TYPES
 }
 
@@ -56,4 +58,7 @@ public class GameProperties : MonoBehaviour
 
     [SerializeField]
     public Sprite[] unitIcons = new Sprite[(int)UnitType.NUM_UNIT_TYPES];
+
+    [SerializeField]
+    public AudioClip[] gunSFX = new AudioClip[(int)UnitType.NUM_UNIT_TYPES];
 }
