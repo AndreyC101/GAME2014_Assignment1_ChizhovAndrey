@@ -75,7 +75,7 @@ public class ButtonControl : MonoBehaviour
         Debug.Log("Spawning Unit: " + m_unitSpawnType.ToString());
         m_costIcon.gameObject.SetActive(true);
         m_loadingBar.gameObject.SetActive(false);
-        m_game.SpawnUnit(m_unitSpawnType);
+        m_game.SpawnUnit(m_unitSpawnType, true);
         spawnAvailable = true;
     }
 

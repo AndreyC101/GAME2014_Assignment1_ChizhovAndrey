@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public enum UnitType
 {
-    SURVIVOR,
+    COMMANDO,
+    SCOUT,
     NUM_UNIT_TYPES
 }
 
@@ -48,7 +49,7 @@ public class GameProperties : MonoBehaviour
     public int[] unitCosts = new int[(int)UnitType.NUM_UNIT_TYPES];
 
     [SerializeField]
-    public int[] spawnTimes = new int[(int)UnitType.NUM_UNIT_TYPES];
+    public float[] spawnTimes = new float[(int)UnitType.NUM_UNIT_TYPES];
 
     [SerializeField]
     public Color[] textColors = new Color[(int)TextType.NUM_TEXT_TYPES];

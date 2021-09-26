@@ -13,6 +13,8 @@ public class GameController : MonoBehaviour
     public Image m_healthBarFill;
 
     public Text m_fundsDisplay;
+
+    public Transform m_friendlySpawnPoint;
     void Start()
     {
         m_baseHealth = m_maxBaseHealth;
@@ -25,9 +27,15 @@ public class GameController : MonoBehaviour
         UpdateUI();
     }
 
-    public void SpawnUnit(UnitType type)
+    public void SpawnUnit(UnitType type, bool friendly)
     {
-
+        Unit newUnit = Instantiate(GameProperties.Instance.unitPrefabs[(int)type], m_friendlySpawnPoint).GetComponent<Unit>();
+        newUnit.m_friendly = friendly;
+        if (!friendly)
+        {
+            newUnit.GetComponent<SpriteRenderer>().flipX = true;
+        }
+        newUnit.gameObject.layer = (friendly ? 6 : 7);
     }
 
     private void UpdateUI()

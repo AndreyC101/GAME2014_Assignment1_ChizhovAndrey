@@ -11,8 +11,8 @@ TagManager:
   - Background
   - Water
   - UI
-  - Characters
-  - Effects
+  - Friendlies
+  - Enemies
   - 
   - 
   - 
@@ -40,4 +40,13 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Friendlies
+    uniqueID: 697939385
+    locked: 0
+  - name: Enemies
+    uniqueID: 3718945971
+    locked: 0
+  - name: Effects
+    uniqueID: 3533399935
     locked: 0
