@@ -6,44 +6,75 @@ public class GameController : MonoBehaviour
 {
     public int m_playerFunds;
 
-    public int m_maxBaseHealth = 150;
-    public int m_baseHealth;
-
-    public Image m_healthBar;
-    public Image m_healthBarFill;
-
     public Text m_fundsDisplay;
 
     public Transform m_friendlySpawnPoint;
+    public Transform m_enemySpawnPoint;
+
+    public float m_enemySpawnDelay = 0.0f;
+    private float timeOfLastEnemySpawn = 0;
+    private bool enemySpawnAvailable = true;
+
+    private List<Unit> unitsInPlay = new List<Unit>();
     void Start()
     {
-        m_baseHealth = m_maxBaseHealth;
-        m_healthBarFill = m_healthBar.transform.Find("HealthBar").GetComponent<Image>();
         m_fundsDisplay.color = GameProperties.Instance.textColors[(int)TextType.VALID];
     }
 
     void FixedUpdate()
     {
         UpdateUI();
+        TrySpawnEnemy();
+        RemoveDeadUnits();
     }
 
     public void SpawnUnit(UnitType type, bool friendly)
     {
-        Unit newUnit = Instantiate(GameProperties.Instance.unitPrefabs[(int)type], m_friendlySpawnPoint).GetComponent<Unit>();
+        Unit newUnit = Instantiate(GameProperties.Instance.unitPrefabs[(int)type], (friendly ? m_friendlySpawnPoint : m_enemySpawnPoint)).GetComponent<Unit>();
         newUnit.m_friendly = friendly;
         if (!friendly)
         {
             newUnit.GetComponent<SpriteRenderer>().flipX = true;
         }
         newUnit.gameObject.layer = (friendly ? 6 : 7);
+        unitsInPlay.Add(newUnit);
+    }
+
+    private void TrySpawnEnemy()
+    {
+        if (Time.time < timeOfLastEnemySpawn + m_enemySpawnDelay && enemySpawnAvailable)
+        {
+            return;
+        }
+        timeOfLastEnemySpawn = Time.time;
+        m_enemySpawnDelay = Random.Range(4.0f, 12.0f);
+        SpawnUnit((UnitType)Random.Range(0, (int)UnitType.NUM_UNIT_TYPES), false);
     }
 
     private void UpdateUI()
     {
         m_fundsDisplay.text = m_playerFunds.ToString();
-        //set health bar fill
-        float fillPerc = m_baseHealth/m_maxBaseHealth;
-        RectTransform maxSize = m_healthBar.rectTransform;
-        m_healthBarFill.rectTransform.sizeDelta = new Vector2(maxSize.rect.width * fillPerc, maxSize.rect.height);
+    }
+
+    public void OnBaseDestroyed()
+    {
+        Debug.Log("Base Destroyed");
+        foreach (Unit unit in unitsInPlay)
+        {
+            unit.TakeDamage(500);
+        }
+        enemySpawnAvailable = false;
+        //Do some UI shit
+    }
+
+    public void RemoveDeadUnits()
+    {
+        for (int i = 0; i < unitsInPlay.Count; i++)
+        {
+            if (unitsInPlay[i].dead)
+            {
+                unitsInPlay.Remove(unitsInPlay[i]);
+            }
+        }
     }
 }

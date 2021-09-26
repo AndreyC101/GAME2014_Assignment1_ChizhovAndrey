@@ -8,20 +8,15 @@ public class ButtonControl : MonoBehaviour
     [SerializeField]
     UnitType m_unitSpawnType;
 
-    [SerializeField]
     Image m_unitIcon;
 
-    [SerializeField]
     private float m_spawnTime;
 
-    [SerializeField]
     private int m_unitCost;
 
-    [SerializeField]
     private Transform m_costIcon;
     private Text m_costText;
 
-    [SerializeField]
     private Image m_loadingBar;
     private Image m_loadingBarFill;
 
@@ -30,7 +25,6 @@ public class ButtonControl : MonoBehaviour
     private bool spawnAvailable = false;
     private float timeOfBeginSpawn = 0f;
     private float timeSinceBeginSpawn = 0f;
-
     void Start()
     {
         //set internal values
@@ -49,7 +43,7 @@ public class ButtonControl : MonoBehaviour
         m_costIcon.gameObject.SetActive(true);
         m_loadingBar.gameObject.SetActive(false);
 
-        spawnAvailable = (m_game.m_playerFunds > m_unitCost);
+        spawnAvailable = (m_game.m_playerFunds >= m_unitCost);
     }
 
     private void Update()

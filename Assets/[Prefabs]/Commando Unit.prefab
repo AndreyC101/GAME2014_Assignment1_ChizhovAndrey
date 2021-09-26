@@ -120,7 +120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_animator: {fileID: 0}
   m_maxHealth: 100
-  m_attackRange: 10
+  m_attackRange: 6
   m_attackDamage: 15
   m_attackSpeed: 1.5
   m_moveSpeed: 0.85

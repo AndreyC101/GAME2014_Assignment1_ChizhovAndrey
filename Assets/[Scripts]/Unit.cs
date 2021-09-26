@@ -32,10 +32,13 @@ public class Unit : MonoBehaviour, IDamageable
 
     public IDamageable currentTarget = null;
     private float timeSinceLastAttack = 0;
+    private CapsuleCollider2D m_collider;
+    private bool isMoving = false;
     void Start()
     {
         m_currentHealth = m_maxHealth;
         m_animator = GetComponent<Animator>();
+        m_collider = GetComponent<CapsuleCollider2D>();
         m_healthBar = transform.Find("HealthBar").gameObject;
         m_healthBar.transform.localScale = new Vector3(m_healthbarMaxWidth, m_healthBar.transform.localScale.y, m_healthBar.transform.localScale.z);
     }
@@ -47,21 +50,31 @@ public class Unit : MonoBehaviour, IDamageable
         {
             return;
         }
+        isMoving = false;
+        //check for enemy unit within attack range
         int layerMask = 1 << LayerMask.NameToLayer(m_friendly ? "Enemies" : "Friendlies");
         RaycastHit2D hit = Physics2D.Raycast(transform.position, (m_friendly ? Vector3.right : Vector3.left), m_attackRange, layerMask);
         Debug.DrawLine(transform.position, (m_friendly ? transform.position + Vector3.right * m_attackRange : transform.position + Vector3.left * m_attackRange), GameProperties.Instance.textColors[(int)TextType.INVALID]);
+        //check distance to unit in front to avoid bunching up
+        m_collider.enabled = false;
+        int layerMaskFriendly = 1 << LayerMask.NameToLayer(m_friendly ? "Friendlies" : "Enemies");
+        RaycastHit2D hitFriendly = Physics2D.Raycast(transform.position, (m_friendly ? Vector3.right : Vector3.left), 0.4f, layerMaskFriendly);
+        Debug.DrawLine(transform.position, (m_friendly ? transform.position + Vector3.right * 0.4f : transform.position + Vector3.left * 0.4f), GameProperties.Instance.textColors[(int)TextType.NEUTRAL]);
+        m_collider.enabled = true;
         if (hit)
         {
             currentTarget = hit.transform.GetComponent<IDamageable>();
             Attack();
         }
-        else Move();
+        else if (!hitFriendly ||  hitFriendly.transform.CompareTag("Respawn"))
+            Move();
+        m_animator.SetBool("Moving", isMoving);
     }
 
     private void Move()
     {
         transform.position = new Vector3(transform.position.x + (m_friendly ? m_moveSpeed : -m_moveSpeed) * Time.fixedDeltaTime, transform.position.y, 0f);
-        m_animator.SetBool("Moving", true);
+        isMoving = true;
     }
 
     private void Attack()
@@ -97,6 +110,10 @@ public class Unit : MonoBehaviour, IDamageable
 
     public void HandleDestruction()
     {
+        if (!m_friendly)
+        {
+            FindObjectOfType<GameController>().m_playerFunds += Random.Range(10, 100);
+        }
         dead = true;
         GetComponent<CapsuleCollider2D>().enabled = false;
         m_healthBar.SetActive(false);
