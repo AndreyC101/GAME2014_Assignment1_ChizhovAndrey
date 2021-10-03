@@ -5,9 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
-    [SerializeField]
-    private AudioClip m_gameMusic;
-
     public Camera m_camera;
     public int m_playerFunds;
     public Text m_fundsDisplay;
@@ -49,7 +46,7 @@ public class GameController : MonoBehaviour
     public void StartGame()
     {
         m_gameInProgress = true;
-        m_audio.clip = m_gameMusic;
+        m_audio.clip = GameProperties.Instance.menuMusic[1];
         m_audio.Play();
         PickUnitToSpawn();
     }
@@ -171,10 +168,14 @@ public class GameController : MonoBehaviour
         if (m_playerVictory)
         {
             m_menuController.SwitchToMenu(MenuType.VICTORY);
+            m_audio.clip = GameProperties.Instance.menuMusic[2];
+            m_audio.loop = false;
         }
         else
         {
             m_menuController.SwitchToMenu(MenuType.DEFEAT);
+            m_audio.clip = GameProperties.Instance.menuMusic[3];
         }
+        m_audio.Play();
     }
 }

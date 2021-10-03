@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
-public enum MenuType
-{
-    MAIN,
-    PAUSE,
-    CONTROLS,
-    VICTORY,
-    DEFEAT,
-    NUM_MENU_TYPES
-}
 public class MenuControl : MonoBehaviour
 {
     [SerializeField]
@@ -24,6 +14,8 @@ public class MenuControl : MonoBehaviour
     void Start()
     {
         m_game = GetComponent<GameController>();
+        m_game.m_audio.clip = GameProperties.Instance.menuMusic[0];
+        m_game.m_audio.Play();
         m_HUD.GetComponent<Canvas>().enabled = false;
         SwitchToMenu(MenuType.MAIN);
     }

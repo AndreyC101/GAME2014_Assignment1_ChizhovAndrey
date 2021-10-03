@@ -424,6 +424,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 09c59748a8359ea4183bace0b3492c10, type: 3}
   - {fileID: 8300000, guid: 10b43ab9fe5fa27448b6180d593e2f8e, type: 3}
   - {fileID: 8300000, guid: f2ce0654efac51047927fad4ec959448, type: 3}
+  menuMusic:
+  - {fileID: 8300000, guid: 1a567b8d10c02824b8823d17b511af1b, type: 3}
+  - {fileID: 8300000, guid: a33164b31d792cf47a3c8e631d1714cb, type: 3}
+  - {fileID: 8300000, guid: 3ed24c982d4c83645bc56a8ebf2e236f, type: 3}
+  - {fileID: 8300000, guid: d2a0f9da3b6ab9841bfea1c62666e5fc, type: 3}
 --- !u!1 &39136576
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,7 +507,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_TargetDisplay: 0
 --- !u!224 &39136580
 RectTransform:
@@ -2102,7 +2107,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!224 &377955381
 RectTransform:
@@ -2751,7 +2756,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_TargetDisplay: 0
 --- !u!224 &568526592
 RectTransform:
@@ -2945,8 +2950,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 707, y: -367}
-  m_SizeDelta: {x: 1212.4, y: 711.1}
+  m_AnchoredPosition: {x: 837.80634, y: -367}
+  m_SizeDelta: {x: 1474.0126, y: 711.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &672322917
 MonoBehaviour:
@@ -3391,7 +3396,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!224 &765465183
 RectTransform:
@@ -5519,7 +5524,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!224 &1634780013
 RectTransform:
@@ -6366,7 +6371,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 410219918ac4e204d958f31040b06e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_gameMusic: {fileID: 8300000, guid: a33164b31d792cf47a3c8e631d1714cb, type: 3}
   m_camera: {fileID: 0}
   m_playerFunds: 250
   m_fundsDisplay: {fileID: 1133737527}

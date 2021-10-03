@@ -21,6 +21,16 @@ public enum TextType
     NUM_TEXT_TYPES
 }
 
+public enum MenuType
+{
+    MAIN,
+    PAUSE,
+    CONTROLS,
+    VICTORY,
+    DEFEAT,
+    NUM_MENU_TYPES
+}
+
 /// <summary>
 /// Used as a singleton to save all parameters that will be used throughout the game, values loaded from editor
 /// </summary>
@@ -62,4 +72,7 @@ public class GameProperties : MonoBehaviour
 
     [SerializeField]
     public AudioClip[] gunSFX = new AudioClip[(int)UnitType.NUM_UNIT_TYPES];
+
+    [SerializeField]
+    public AudioClip[] menuMusic = new AudioClip[4];
 }
