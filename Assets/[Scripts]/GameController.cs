@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+
+/// <summary>
+/// GameController.cs - Andrey Chizhov - 101255069
+/// Controls game flow outside the menus, spawns enemies and handles victory and defeat conditions
+/// enemy units are spawned randomly on a timer. The timer depends on their spawn times found in gameproperties, and decreased based on how many units have already been spawned this game
+/// the player earns currency at a rate of the same bpm as the gamestate music
+/// </summary>
 public class GameController : MonoBehaviour
 {
     public Camera m_camera;
@@ -177,5 +184,14 @@ public class GameController : MonoBehaviour
             m_audio.clip = GameProperties.Instance.menuMusic[3];
         }
         m_audio.Play();
+    }
+
+    public void CleanGame()
+    {
+        foreach (Unit unit in unitsInPlay)
+        {
+            unit.dead = true;
+        }
+        RemoveDeadUnits();
     }
 }

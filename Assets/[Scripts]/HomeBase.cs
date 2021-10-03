@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// HomeBase.cs - Andrey Chizhov - 101255069
+/// Each base implements the idamageable interface so npcs can destroy them
+/// </summary>
 public class HomeBase : MonoBehaviour, IDamageable
 {
     public float m_maxBaseHealth = 150;
@@ -51,7 +55,6 @@ public class HomeBase : MonoBehaviour, IDamageable
 
     public void ClearFromField()
     {
-        //disable all sprites and mesh renderer
     }
 
 

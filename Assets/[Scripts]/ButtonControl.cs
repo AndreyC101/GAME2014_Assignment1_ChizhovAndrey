@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// ButtonControl.cs - Andrey Chizhov - 101255069
+/// Script for the unit spawn buttons on the main HUD, displays icon, unit cost, and progress bar for unit being spawned
+/// </summary>
 public class ButtonControl : MonoBehaviour
 {
     [SerializeField]

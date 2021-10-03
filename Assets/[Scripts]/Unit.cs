@@ -1,6 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+/// <summary>
+/// Unit.cs - Andrey Chizhov - 101255069
+/// controls the friendly and enemy npcs, behavior depends on individual stats
+/// </summary>
 public class Unit : MonoBehaviour, IDamageable
 {
     public UnitType m_type;
@@ -57,7 +62,7 @@ public class Unit : MonoBehaviour, IDamageable
             return;
         }
         isMoving = false;
-        //check for enemy unit within attack range
+        //check for enemy unit within attack range by raycasting, if no enemy is detected, the unit will advance
         int layerMask = 1 << LayerMask.NameToLayer(m_friendly ? "Enemies" : "Friendlies");
         RaycastHit2D hit = Physics2D.Raycast(transform.position, (m_friendly ? Vector3.right : Vector3.left), m_attackRange, layerMask);
         Debug.DrawLine(transform.position, (m_friendly ? transform.position + Vector3.right * m_attackRange : transform.position + Vector3.left * m_attackRange), GameProperties.Instance.textColors[(int)TextType.INVALID]);

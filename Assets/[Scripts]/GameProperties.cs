@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// GameProperties.cs - Andrey Chizhov - 101255069
+/// Central data pool used in different parts of the game
+/// all custom enums are located here
+/// </summary>
 public enum UnitType
 {
     COMMANDO,

@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+
+/// <summary>
+/// MenuControl.cs - Andrey Chizhov - 101255069
+/// Manages the menus and provides button functions
+/// </summary>
 public class MenuControl : MonoBehaviour
 {
     [SerializeField]
@@ -30,7 +35,7 @@ public class MenuControl : MonoBehaviour
                 else SwitchToMenu(MenuType.PAUSE);
             }
         }
-        m_HUD.GetComponent<Canvas>().enabled = Time.timeScale == 0.0f ? false : true;
+        m_HUD.GetComponent<Canvas>().enabled = Time.timeScale == 0 ? false : true;
     }
 
     public void SwitchToMenu(MenuType menu)
@@ -57,6 +62,7 @@ public class MenuControl : MonoBehaviour
 
     public void Quit()
     {
+        m_game.CleanGame();
         Application.Quit();
     }
 
