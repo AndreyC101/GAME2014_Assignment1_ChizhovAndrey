@@ -18,7 +18,7 @@ public class Unit : MonoBehaviour, IDamageable
     private int m_attackDamage = 15;
 
     [SerializeField]
-    private float m_attackSpeed = 1.0f;
+    private float m_attackDelay = 1.0f;
 
     [SerializeField]
     private float m_moveSpeed = 1.0f;
@@ -82,7 +82,7 @@ public class Unit : MonoBehaviour, IDamageable
     {
         m_animator.SetBool("Moving", false);
         timeSinceLastAttack += Time.deltaTime;
-        if (currentTarget != null && timeSinceLastAttack > m_attackSpeed)
+        if (currentTarget != null && timeSinceLastAttack > m_attackDelay)
         {
             timeSinceLastAttack = 0;
             m_animator.SetTrigger("Attack");
@@ -113,7 +113,7 @@ public class Unit : MonoBehaviour, IDamageable
     {
         if (!m_friendly)
         {
-            FindObjectOfType<GameController>().m_playerFunds += Random.Range(25, 150);
+            FindObjectOfType<GameController>().m_playerFunds += GameProperties.Instance.unitCosts[(int)m_type];
         }
         dead = true;
         GetComponent<CapsuleCollider2D>().enabled = false;

@@ -27,7 +27,7 @@ public class HomeBase : MonoBehaviour, IDamageable
         m_hqSign.sortingOrder = 3;
     }
 
-    void UpdateUI() //TODOOOOOO
+    void UpdateUI()
     {
         float fillPerc = m_baseHealth / m_maxBaseHealth;
         m_healthBarFill.localScale = new Vector3(fillPerc, m_healthBarFill.localScale.y, 1.0f);

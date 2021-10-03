@@ -121,11 +121,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_type: 0
   m_animator: {fileID: 0}
-  m_maxHealth: 100
-  m_attackRange: 6
-  m_attackDamage: 25
-  m_attackSpeed: 1.5
-  m_moveSpeed: 0.85
+  m_maxHealth: 200
+  m_attackRange: 1.75
+  m_attackDamage: 60
+  m_attackDelay: 1
+  m_moveSpeed: 1.35
   m_healthBar: {fileID: 0}
   m_audio: {fileID: 0}
   m_currentHealth: 0

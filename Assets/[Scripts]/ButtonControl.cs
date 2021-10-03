@@ -24,7 +24,6 @@ public class ButtonControl : MonoBehaviour
 
     private bool spawnAvailable = false;
     private float timeOfBeginSpawn = 0f;
-    private float timeSinceBeginSpawn = 0f;
     void Start()
     {
         //set internal values
@@ -57,7 +56,6 @@ public class ButtonControl : MonoBehaviour
         {
             spawnAvailable = false;
             timeOfBeginSpawn = Time.time;
-            timeSinceBeginSpawn = 0f;
             m_game.m_playerFunds -= m_unitCost;
             m_costIcon.gameObject.SetActive(false);
             m_loadingBar.gameObject.SetActive(true);
@@ -74,19 +72,18 @@ public class ButtonControl : MonoBehaviour
     }
 
     /// <summary>
-    /// If not loading unity, Set cost color to red if insufficient funds, else set yellow
+    /// If not loading unit, Set cost color to red if insufficient funds, else set yellow
     /// if loading unit, update loading bar fill using deltaTime and check timer
     /// </summary>
     private void UpdateDisplay()
     {
         if (m_loadingBar.gameObject.activeSelf)
         {
-            timeSinceBeginSpawn += Time.deltaTime;
-            if ((timeOfBeginSpawn + timeSinceBeginSpawn) > (timeOfBeginSpawn + m_spawnTime))
+            if (Time.time > timeOfBeginSpawn + m_spawnTime)
                 SpawnUnit();
             else
             {
-                float fillPerc = timeSinceBeginSpawn / m_spawnTime;
+                float fillPerc = (Time.time - timeOfBeginSpawn) / m_spawnTime;
                 RectTransform maxSize = m_loadingBar.rectTransform;
                 m_loadingBarFill.rectTransform.sizeDelta = new Vector2(maxSize.rect.width * fillPerc, maxSize.rect.height);
             }

@@ -20,16 +20,24 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9100000, guid: 48839201c2b432645b8384f4407cca92, type: 2}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
+      propertyPath: m_type
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_maxHealth
       value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_moveSpeed
-      value: 0.7
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
+      propertyPath: m_attackDelay
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_attackRange
-      value: 8.5
+      value: 9.5
       objectReference: {fileID: 0}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_attackSpeed

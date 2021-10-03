@@ -9,6 +9,7 @@ public enum UnitType
     SCOUT,
     MARKSMAN,
     HEAVY,
+    INFANTRY,
     NUM_UNIT_TYPES
 }
 

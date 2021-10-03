@@ -20,20 +20,28 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9100000, guid: 7e54c8a190896934f96a4117a993829e, type: 2}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
+      propertyPath: m_type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_maxHealth
-      value: 250
+      value: 450
       objectReference: {fileID: 0}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_moveSpeed
-      value: 0.6
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
+      propertyPath: m_attackDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_attackRange
-      value: 4
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_attackSpeed
-      value: 0.65
+      value: 0.34
       objectReference: {fileID: 0}
     - target: {fileID: 6006184170876785134, guid: 853081349809d304aae6978cc67bf4ca, type: 3}
       propertyPath: m_attackDamage

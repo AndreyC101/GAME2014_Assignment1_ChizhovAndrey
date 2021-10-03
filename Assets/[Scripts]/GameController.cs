@@ -2,35 +2,62 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
+    [SerializeField]
+    private AudioClip m_gameMusic;
+
     public Camera m_camera;
     public int m_playerFunds;
     public Text m_fundsDisplay;
     public float m_fundsAddDelay;
+    public float m_enemySpawnDelayMod = 0;
 
     public Transform m_friendlySpawnPoint;
     public Transform m_enemySpawnPoint;
+
+    public AudioSource m_audio;
 
     public float m_enemySpawnDelay = 0.0f;
     private float timeOfLastEnemySpawn = 0;
     private float timeOfLastFundsAdded = 0;
     private bool enemySpawnBlocked = false;
     private bool fundsAddBlocked = false;
-    
 
     private List<Unit> unitsInPlay = new List<Unit>();
 
     private Vector2 m_touchStart, m_touchEnd;
+
+    private UnitType enemyToSpawn;
+
+    private int enemyUnitsSpawned = 0;
+
+    public bool m_gameInProgress = false;
+
+    private bool m_playerVictory = false;
+
+    private MenuControl m_menuController;
     void Start()
     {
         m_camera = FindObjectOfType<Camera>();
+        m_audio = GetComponent<AudioSource>();
+        m_menuController = GetComponent<MenuControl>();
         m_fundsDisplay.color = GameProperties.Instance.textColors[(int)TextType.VALID];
+    }
+
+    public void StartGame()
+    {
+        m_gameInProgress = true;
+        m_audio.clip = m_gameMusic;
+        m_audio.Play();
+        PickUnitToSpawn();
     }
 
     void FixedUpdate()
     {
-        UpdateUI();
+        if (!m_gameInProgress) return;
+        UpdateHUD();
         TrySpawnEnemy();
         TryEarnFunds();
         RemoveDeadUnits();
@@ -47,6 +74,8 @@ public class GameController : MonoBehaviour
         if (!friendly)
         {
             newUnit.GetComponent<SpriteRenderer>().flipX = true;
+            enemyUnitsSpawned++;
+            m_enemySpawnDelayMod = -(0.034f * enemyUnitsSpawned);
         }
         newUnit.gameObject.layer = (friendly ? 6 : 7);
         newUnit.m_type = type;
@@ -60,11 +89,11 @@ public class GameController : MonoBehaviour
             return;
         }
         timeOfLastEnemySpawn = Time.time;
-        m_enemySpawnDelay = Random.Range(5.0f, 15.0f);
-        SpawnUnit((UnitType)Random.Range(0, (int)UnitType.NUM_UNIT_TYPES), false);
+        SpawnUnit(enemyToSpawn, false);
+        PickUnitToSpawn();
     }
 
-    private void UpdateUI()
+    private void UpdateHUD()
     {
         m_fundsDisplay.text = m_playerFunds.ToString();
     }
@@ -73,19 +102,21 @@ public class GameController : MonoBehaviour
     {
         foreach (Unit unit in unitsInPlay)
         {
-            unit.TakeDamage(500);
+            unit.dead = true;
         }
         enemySpawnBlocked = true;
         fundsAddBlocked = true;
+        m_gameInProgress = false;
+        m_playerVictory = !friendly;
         if (friendly)
         {
             Debug.Log("Base Destroyed");
-            //Do some UI shit
         }
         else
         {
             Debug.Log("Enemy Base Destroyed");
         }
+        Invoke("OnGameOver", 2.5f);
     }
 
     public void RemoveDeadUnits()
@@ -99,6 +130,9 @@ public class GameController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Lets the user scroll the camera across the field by swiping
+    /// </summary>
     private void UpdateTouchInput()
     {
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
@@ -110,7 +144,7 @@ public class GameController : MonoBehaviour
             m_touchEnd = Input.GetTouch(0).position;
 
             float swipeDistance = m_touchEnd.x - m_touchStart.x;
-            Vector2 cameraAcceleration = new Vector2((-swipeDistance) / 100, 0f);
+            Vector2 cameraAcceleration = new Vector2((-swipeDistance) / 50, 0f);
             m_camera.GetComponent<Rigidbody2D>().AddForce(cameraAcceleration, ForceMode2D.Impulse);
             Debug.Log($"Swipe of {swipeDistance} units detected");
         }
@@ -124,5 +158,23 @@ public class GameController : MonoBehaviour
         }
         timeOfLastFundsAdded = Time.time;
         m_playerFunds += 1;
+    }
+
+    private void PickUnitToSpawn()
+    {
+        enemyToSpawn = (UnitType)Random.Range(0, (int)UnitType.NUM_UNIT_TYPES);
+        m_enemySpawnDelay = GameProperties.Instance.spawnTimes[(int)enemyToSpawn] + (m_enemySpawnDelayMod > -GameProperties.Instance.spawnTimes[(int)enemyToSpawn] ? m_enemySpawnDelayMod : GameProperties.Instance.spawnTimes[(int)enemyToSpawn] * 0.07f);
+    }
+
+    private void OnGameOver()
+    {
+        if (m_playerVictory)
+        {
+            m_menuController.SwitchToMenu(MenuType.VICTORY);
+        }
+        else
+        {
+            m_menuController.SwitchToMenu(MenuType.DEFEAT);
+        }
     }
 }
