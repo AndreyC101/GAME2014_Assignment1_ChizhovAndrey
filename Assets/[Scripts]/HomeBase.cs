@@ -36,11 +36,15 @@ public class HomeBase : MonoBehaviour, IDamageable
         float fillPerc = m_baseHealth / m_maxBaseHealth;
         m_healthBarFill.localScale = new Vector3(fillPerc, m_healthBarFill.localScale.y, 1.0f);
     }
-    public bool TakeDamage(int incomingDamage)
+    public bool TakeDamage(float incomingDamage)
     {
         m_baseHealth -= incomingDamage;
         if (m_baseHealth > 0)
         {
+            if (m_baseHealth > m_maxBaseHealth)
+            {
+                m_baseHealth = m_maxBaseHealth;
+            }
             UpdateUI();
         }
         else HandleDestruction();

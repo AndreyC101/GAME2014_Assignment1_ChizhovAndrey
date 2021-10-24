@@ -56,7 +56,7 @@ public class MenuControl : MonoBehaviour
 
     public void BeginGame()
     {
-        m_game.StartGame();
+        m_game.OnStartGame();
         CloseAllMenus();
     }
 

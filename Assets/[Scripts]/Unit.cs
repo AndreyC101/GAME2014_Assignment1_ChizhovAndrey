@@ -10,17 +10,19 @@ public class Unit : MonoBehaviour, IDamageable
 {
     public UnitType m_type;
 
+    public UnitManager m_unitManager;
+
     [SerializeField]
     private Animator m_animator;
 
     [SerializeField]
-    private int m_maxHealth = 100;
+    private float m_maxHealth = 100;
 
     [SerializeField]
     private float m_attackRange = 1.0f;
 
     [SerializeField]
-    private int m_attackDamage = 15;
+    private float m_attackDamage = 15;
 
     [SerializeField]
     private float m_attackDelay = 1.0f;
@@ -34,7 +36,7 @@ public class Unit : MonoBehaviour, IDamageable
     [SerializeField]
     private AudioSource m_audio;
 
-    public int m_currentHealth;
+    public float m_currentHealth;
 
     public bool m_friendly;
     public bool dead;
@@ -46,12 +48,22 @@ public class Unit : MonoBehaviour, IDamageable
     private bool isMoving = false;
     void Start()
     {
-        m_currentHealth = m_maxHealth;
         m_animator = GetComponent<Animator>();
         m_collider = GetComponent<CapsuleCollider2D>();
         m_audio = GetComponent<AudioSource>();
+        m_unitManager = FindObjectOfType<UnitManager>();
         m_healthBar = transform.Find("HealthBar").gameObject;
+        gameObject.SetActive(false);
+    }
+
+    public void OnSpawn()
+    {
+        m_currentHealth = m_maxHealth;
+        GetComponent<CapsuleCollider2D>().enabled = true;
+        m_healthBar.SetActive(true);
         m_healthBar.transform.localScale = new Vector3(m_healthbarMaxWidth, m_healthBar.transform.localScale.y, m_healthBar.transform.localScale.z);
+        m_animator.Play(0);
+        dead = false;
     }
 
     // Update is called once per frame
@@ -97,7 +109,7 @@ public class Unit : MonoBehaviour, IDamageable
         }
     }
 
-    public bool TakeDamage(int incomingDamage)
+    public bool TakeDamage(float incomingDamage)
     {
         m_currentHealth -= incomingDamage;
         if (m_currentHealth > 0)
@@ -118,9 +130,11 @@ public class Unit : MonoBehaviour, IDamageable
     {
         if (!m_friendly)
         {
-            FindObjectOfType<GameController>().m_playerFunds += GameProperties.Instance.unitCosts[(int)m_type];
+            GameController.Instance.m_playerFunds += GameProperties.Instance.unitCosts[(int)m_type] / 2;
+            GameController.Instance.TrySpawnResourceDrop(transform.position);
         }
         dead = true;
+        GameController.Instance.unitsInPlay.Remove(this);
         GetComponent<CapsuleCollider2D>().enabled = false;
         m_healthBar.SetActive(false);
         Invoke("ClearFromField", 3.0f);
@@ -128,6 +142,6 @@ public class Unit : MonoBehaviour, IDamageable
 
     public void ClearFromField()
     {
-        Destroy(gameObject);
+        m_unitManager.ReturnUnit(gameObject);
     }
 }

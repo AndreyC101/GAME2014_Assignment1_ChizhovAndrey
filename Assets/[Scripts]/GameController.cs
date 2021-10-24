@@ -6,65 +6,86 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// GameController.cs - Andrey Chizhov - 101255069
-/// Controls game flow outside the menus, spawns enemies and handles victory and defeat conditions
+/// Controls game flow outside the menus, spawns enemies and handles victory and defeat conditions, implemented as a singleton
 /// enemy units are spawned randomly on a timer. The timer depends on their spawn times found in gameproperties, and decreased based on how many units have already been spawned this game
 /// the player earns currency at a rate of the same bpm as the gamestate music
 /// </summary>
 public class GameController : MonoBehaviour
 {
+    private static GameController _instance = null;
+    public static GameController Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = GameObject.FindObjectOfType(typeof(GameController)) as GameController;
+            }
+            return _instance;
+        }
+    }
+    private void Awake()
+    {
+        _instance = this;
+        DontDestroyOnLoad(this);
+    }
+
     public Camera m_camera;
     public int m_playerFunds;
     public Text m_fundsDisplay;
     public float m_fundsAddDelay;
     public float m_enemySpawnDelayMod = 0;
 
+    //spawn transforms
     public Transform m_friendlySpawnPoint;
     public Transform m_enemySpawnPoint;
 
     public AudioSource m_audio;
-
-    public float m_enemySpawnDelay = 0.0f;
-    private float timeOfLastEnemySpawn = 0;
-    private float timeOfLastFundsAdded = 0;
+    
     private bool enemySpawnBlocked = false;
     private bool fundsAddBlocked = false;
 
-    private List<Unit> unitsInPlay = new List<Unit>();
-
     private Vector2 m_touchStart, m_touchEnd;
 
-    private UnitType enemyToSpawn;
-
+    //enemy control
     private int enemyUnitsSpawned = 0;
+    public float m_enemySpawnDelay = 0.0f;
+    private float timeOfLastEnemySpawn = 0;
+    private float timeOfLastFundsAdded = 0;
 
+    //gameplay flags
     public bool m_gameInProgress = false;
-
     private bool m_playerVictory = false;
 
     private MenuControl m_menuController;
+    private UnitManager m_unitManager;
+
+    public int[] playerUnitCounts = new int[(int)UnitType.NUM_UNIT_TYPES];
+    public List<Unit> unitsInPlay = new List<Unit>();
+
     void Start()
     {
         m_camera = FindObjectOfType<Camera>();
         m_audio = GetComponent<AudioSource>();
         m_menuController = GetComponent<MenuControl>();
+        m_unitManager = GetComponent<UnitManager>();
         m_fundsDisplay.color = GameProperties.Instance.textColors[(int)TextType.VALID];
     }
 
-    public void StartGame()
+    public void OnStartGame()
     {
         m_gameInProgress = true;
         m_audio.clip = GameProperties.Instance.menuMusic[1];
         m_audio.Play();
-        PickUnitToSpawn();
+        StartCoroutine("InitiateEnemySpawn");
     }
 
     void FixedUpdate()
     {
         if (!m_gameInProgress) return;
+        GetUnitCounts();
         UpdateHUD();
-        TrySpawnEnemy();
         TryEarnFunds();
-        RemoveDeadUnits();
     }
     private void Update()
     {
@@ -73,28 +94,45 @@ public class GameController : MonoBehaviour
 
     public void SpawnUnit(UnitType type, bool friendly)
     {
-        Unit newUnit = Instantiate(GameProperties.Instance.unitPrefabs[(int)type], (friendly ? m_friendlySpawnPoint : m_enemySpawnPoint)).GetComponent<Unit>();
-        newUnit.m_friendly = friendly;
-        if (!friendly)
-        {
-            newUnit.GetComponent<SpriteRenderer>().flipX = true;
-            enemyUnitsSpawned++;
-            m_enemySpawnDelayMod = -(0.034f * enemyUnitsSpawned);
-        }
-        newUnit.gameObject.layer = (friendly ? 6 : 7);
-        newUnit.m_type = type;
-        unitsInPlay.Add(newUnit);
+        unitsInPlay.Add(m_unitManager.GetUnit(friendly, (int)type, friendly ? m_friendlySpawnPoint : m_enemySpawnPoint).GetComponent<Unit>());
     }
 
-    private void TrySpawnEnemy()
+    IEnumerator InitiateEnemySpawn()
     {
-        if (Time.time < timeOfLastEnemySpawn + m_enemySpawnDelay || enemySpawnBlocked)
+        UnitType enemyToSpawn;
+        int attempts = 0;
+        do
         {
-            return;
-        }
+            enemyToSpawn = (UnitType)Random.Range(0, (int)UnitType.NUM_UNIT_TYPES);
+            if (attempts++ % 10 == 0)
+            {
+                yield return new WaitForSeconds(0.5f);
+            }
+        } while (m_unitManager.UnitsAvailable(false, (int)enemyToSpawn) == 0);
+        float spawnDelay = GameProperties.Instance.spawnTimes[(int)enemyToSpawn] +
+            (m_enemySpawnDelayMod > -GameProperties.Instance.spawnTimes[(int)enemyToSpawn] ? m_enemySpawnDelayMod : GameProperties.Instance.spawnTimes[(int)enemyToSpawn] * 0.07f);
+        StartCoroutine(ExecuteEnemySpawn(enemyToSpawn, spawnDelay));
+        StopCoroutine("InitiateEnemySpawn");
+    }
+
+    IEnumerator ExecuteEnemySpawn(UnitType type, float spawnDelay)
+    {
+        yield return new WaitForSeconds(spawnDelay);
         timeOfLastEnemySpawn = Time.time;
-        SpawnUnit(enemyToSpawn, false);
-        PickUnitToSpawn();
+        SpawnUnit(type, false);
+        if (enemyUnitsSpawned++ % 5 == 0)
+        {
+            m_unitManager.AddUnitToQueue(false, Random.Range(0, (int)UnitType.NUM_UNIT_TYPES));
+        }
+        StartCoroutine("InitiateEnemySpawn");
+    }
+
+    private void GetUnitCounts()
+    {
+        for (int i = 0; i < (int)UnitType.NUM_UNIT_TYPES; i++)
+        {
+            playerUnitCounts[i] = GameProperties.Instance.maxPlayerUnits[i] - m_unitManager.UnitsAvailable(true, i);
+        }
     }
 
     private void UpdateHUD()
@@ -123,17 +161,6 @@ public class GameController : MonoBehaviour
         Invoke("OnGameOver", 2.5f);
     }
 
-    public void RemoveDeadUnits()
-    {
-        for (int i = 0; i < unitsInPlay.Count; i++)
-        {
-            if (unitsInPlay[i].dead)
-            {
-                unitsInPlay.Remove(unitsInPlay[i]);
-            }
-        }
-    }
-
     /// <summary>
     /// Lets the user scroll the camera across the field by swiping
     /// </summary>
@@ -146,6 +173,16 @@ public class GameController : MonoBehaviour
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
         {
             m_touchEnd = Input.GetTouch(0).position;
+            Ray ray = m_camera.ScreenPointToRay(m_touchEnd);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                ResourceDrop drop = hit.transform.gameObject.GetComponent<ResourceDrop>();
+                if (drop)
+                {
+                    drop.OnPickedUp();
+                }
+            }
 
             float swipeDistance = m_touchEnd.x - m_touchStart.x;
             Vector2 cameraAcceleration = new Vector2((-swipeDistance) / 50, 0f);
@@ -164,14 +201,9 @@ public class GameController : MonoBehaviour
         m_playerFunds += 1;
     }
 
-    private void PickUnitToSpawn()
-    {
-        enemyToSpawn = (UnitType)Random.Range(0, (int)UnitType.NUM_UNIT_TYPES);
-        m_enemySpawnDelay = GameProperties.Instance.spawnTimes[(int)enemyToSpawn] + (m_enemySpawnDelayMod > -GameProperties.Instance.spawnTimes[(int)enemyToSpawn] ? m_enemySpawnDelayMod : GameProperties.Instance.spawnTimes[(int)enemyToSpawn] * 0.07f);
-    }
-
     private void OnGameOver()
     {
+        CleanGame();
         if (m_playerVictory)
         {
             m_menuController.SwitchToMenu(MenuType.VICTORY);
@@ -190,8 +222,16 @@ public class GameController : MonoBehaviour
     {
         foreach (Unit unit in unitsInPlay)
         {
-            unit.dead = true;
+            m_unitManager.ReturnUnit(unit.gameObject);
         }
-        RemoveDeadUnits();
+    }
+    public void TrySpawnResourceDrop(Vector3 position)
+    {
+        
+    }
+
+    public void RepairBase(float dropValue)
+    {
+
     }
 }

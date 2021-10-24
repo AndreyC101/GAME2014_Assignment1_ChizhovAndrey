@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public interface IDamageable
 {
-    bool TakeDamage(int damage);
+    bool TakeDamage(float damage);
     void HandleDestruction();
     void ClearFromField();
 }

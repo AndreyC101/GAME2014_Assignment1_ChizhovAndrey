@@ -18,6 +18,13 @@ public enum UnitType
     NUM_UNIT_TYPES
 }
 
+public enum ResourceDropType
+{
+    BASE_HEALTH,
+    CURRENCY,
+    NUM_RESOURCE_DROP_TYPES
+}
+
 public enum TextType
 {
     NEUTRAL,
@@ -62,6 +69,15 @@ public class GameProperties : MonoBehaviour
 
     [SerializeField]
     public GameObject[] unitPrefabs = new GameObject[(int)UnitType.NUM_UNIT_TYPES];
+
+    [SerializeField]
+    public GameObject[] resourceDropPrefabs = new GameObject[(int)ResourceDropType.NUM_RESOURCE_DROP_TYPES];
+
+    [SerializeField]
+    public int[] maxPlayerUnits = new int[(int)UnitType.NUM_UNIT_TYPES];
+
+    [SerializeField]
+    public int[] maxEnemyUnits = new int[(int)UnitType.NUM_UNIT_TYPES];
 
     [SerializeField]
     public int[] unitCosts = new int[(int)UnitType.NUM_UNIT_TYPES];
