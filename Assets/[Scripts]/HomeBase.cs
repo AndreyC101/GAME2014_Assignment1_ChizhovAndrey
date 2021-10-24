@@ -32,6 +32,7 @@ public class HomeBase : MonoBehaviour, IDamageable
 
     public void OnGameStart()
     {
+        m_healthBarFill = m_healthBar.transform.Find("HealthBar");
         m_baseHealth = m_maxBaseHealth;
         UpdateUI();
     }
@@ -57,7 +58,7 @@ public class HomeBase : MonoBehaviour, IDamageable
 
     public void HandleDestruction()
     {
-        m_healthBarFill.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+        //m_healthBarFill.localScale = new Vector3(0.0f, 0.0f, 0.0f);
         m_game.OnBaseDestroyed(m_friendly);
     }
 
