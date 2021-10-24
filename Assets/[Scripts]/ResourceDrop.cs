@@ -7,6 +7,9 @@ public class ResourceDrop : MonoBehaviour
     [SerializeField]
     public ResourceDropType m_type;
 
+    [SerializeField]
+    private float m_riseSpeed = 0;
+
     private SpriteRenderer m_sprite;
 
     float dropValue = 0;
@@ -22,12 +25,21 @@ public class ResourceDrop : MonoBehaviour
         switch (m_type)
         {
             case ResourceDropType.BASE_HEALTH:
-                GameController.Instance.RepairBase(dropValue);
+                GameController.Instance.RepairBase(dropValue * 3.5f);
                 break;
             case ResourceDropType.CURRENCY:
                 GameController.Instance.m_playerFunds += (int)dropValue;
                 break;
+            case ResourceDropType.UNIT_CAP_UPGRADE:
+                GameController.Instance.UpgradePlayerUnitLimit(Random.Range(0, (int)UnitType.NUM_UNIT_TYPES));
+                break;
         }
         Destroy(this.gameObject);
+    }
+
+    private void FixedUpdate()
+    {
+        transform.position += new Vector3(0.0f, m_riseSpeed * Time.deltaTime, 0.0f);
+        if (transform.position.y > 9.0f) Destroy(this.gameObject);
     }
 }

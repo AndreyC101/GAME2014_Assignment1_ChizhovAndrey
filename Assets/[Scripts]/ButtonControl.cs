@@ -28,8 +28,6 @@ public class ButtonControl : MonoBehaviour
     private bool spawnAvailable = false;
     private float timeOfBeginSpawn = 0f;
 
-    public int m_unitLimit = 0;
-    public int m_unitsInPlay = 0;
     void Start()
     {
         //set internal values
@@ -37,7 +35,6 @@ public class ButtonControl : MonoBehaviour
         m_unitIcon.sprite = GameProperties.Instance.unitIcons[(int)m_unitSpawnType];
         m_spawnTime = GameProperties.Instance.spawnTimes[(int)m_unitSpawnType];
         m_unitCost = GameProperties.Instance.unitCosts[(int)m_unitSpawnType];
-        m_unitLimit = GameController.Instance.activeMaxPlayerUnits[(int)m_unitSpawnType];
 
         //setup extra UI elements
         m_costIcon = transform.Find("MoneyIcon");
@@ -54,7 +51,6 @@ public class ButtonControl : MonoBehaviour
 
     private void Update()
     {
-        m_unitLimit = GameController.Instance.activeMaxPlayerUnits[(int)m_unitSpawnType];
         UpdateDisplay();
     }
 
@@ -101,10 +97,10 @@ public class ButtonControl : MonoBehaviour
         if (GameController.Instance.m_playerFunds < GameProperties.Instance.unitCosts[(int)m_unitSpawnType])
             m_costText.color = GameProperties.Instance.textColors[(int)TextType.INVALID];
         else m_costText.color = GameProperties.Instance.textColors[(int)TextType.VALID];
-
+        //set unit count color to red if no more units of this type are available
         if (GameController.Instance.playerUnitCounts[(int)m_unitSpawnType] >= GameController.Instance.activeMaxPlayerUnits[(int)m_unitSpawnType])
             m_unitCountText.color = GameProperties.Instance.textColors[(int)TextType.INVALID];
         else m_unitCountText.color = GameProperties.Instance.textColors[(int)TextType.VALID];
-        m_unitCountText.text = $"{GameController.Instance.playerUnitCounts[(int)m_unitSpawnType]} / {m_unitLimit}";
+        m_unitCountText.text = $"{GameController.Instance.playerUnitCounts[(int)m_unitSpawnType]} / {GameController.Instance.activeMaxPlayerUnits[(int)m_unitSpawnType]}";
     }
 }

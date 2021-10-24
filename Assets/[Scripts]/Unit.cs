@@ -128,7 +128,11 @@ public class Unit : MonoBehaviour, IDamageable
 
     public void HandleDestruction()
     {
-        if (!m_friendly)
+        if (m_friendly)
+        {
+            GameController.Instance.OnPlayerUnitKilled();
+        }
+        else
         {
             GameController.Instance.m_playerFunds += GameProperties.Instance.unitCosts[(int)m_type] / 2;
             GameController.Instance.TrySpawnResourceDrop(transform.position);

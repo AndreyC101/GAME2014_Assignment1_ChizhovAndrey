@@ -24,19 +24,18 @@ public class MenuControl : MonoBehaviour
         m_HUD.GetComponent<Canvas>().enabled = false;
         SwitchToMenu(MenuType.MAIN);
     }
-    void Update()
+    void FixedUpdate()
     {
-        if (m_game.m_gameInProgress)
+        m_HUD.GetComponent<Canvas>().enabled = Time.timeScale == 0 ? false : true;
+        if (m_game != null && m_game.m_gameInProgress)
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKey(KeyCode.Escape))
             {
                 if (m_menuPanels[(int)MenuType.CONTROLS].activeSelf)
                     CloseAllMenus();
                 else SwitchToMenu(MenuType.PAUSE);
             }
         }
-        if (m_HUD.GetComponent<Canvas>())
-            m_HUD.GetComponent<Canvas>().enabled = Time.timeScale == 0 ? false : true;
     }
 
     public void SwitchToMenu(MenuType menu)
@@ -58,6 +57,7 @@ public class MenuControl : MonoBehaviour
     public void BeginGame()
     {
         m_game.OnStartGame();
+        m_HUD.GetComponent<Canvas>().enabled = true;
         CloseAllMenus();
     }
 

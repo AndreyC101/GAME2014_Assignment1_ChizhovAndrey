@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// </summary>
 public class HomeBase : MonoBehaviour, IDamageable
 {
-    public float m_maxBaseHealth = 150;
+    public float m_maxBaseHealth = 800;
     private float m_baseHealth;
 
     public Transform m_healthBar;

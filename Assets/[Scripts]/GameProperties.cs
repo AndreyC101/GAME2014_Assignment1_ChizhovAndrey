@@ -22,6 +22,7 @@ public enum ResourceDropType
 {
     BASE_HEALTH,
     CURRENCY,
+    UNIT_CAP_UPGRADE,
     NUM_RESOURCE_DROP_TYPES
 }
 
@@ -69,9 +70,6 @@ public class GameProperties : MonoBehaviour
 
     [SerializeField]
     public GameObject[] unitPrefabs = new GameObject[(int)UnitType.NUM_UNIT_TYPES];
-
-    [SerializeField]
-    public GameObject[] resourceDropPrefabs = new GameObject[(int)ResourceDropType.NUM_RESOURCE_DROP_TYPES];
 
     [SerializeField]
     public int[] maxPlayerUnits = new int[(int)UnitType.NUM_UNIT_TYPES];

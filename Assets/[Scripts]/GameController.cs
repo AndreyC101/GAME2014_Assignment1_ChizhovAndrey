@@ -55,6 +55,7 @@ public class GameController : MonoBehaviour
     public float m_enemySpawnDelay = 0.0f;
     private float timeOfLastEnemySpawn = 0;
     private float timeOfLastFundsAdded = 0;
+    private float playerUnitsKilled = 0;
 
     //gameplay flags
     public bool m_gameInProgress = false;
@@ -122,17 +123,13 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(spawnDelay);
         timeOfLastEnemySpawn = Time.time;
         SpawnUnit(type, false);
-        if (enemyUnitsSpawned++ % 5 == 0)
-        {
-            m_unitManager.AddUnitToQueue(false, Random.Range(0, (int)UnitType.NUM_UNIT_TYPES));
-        }
         StartCoroutine("InitiateEnemySpawn");
     }
     private void GetUnitCounts()
     {
         for (int i = 0; i < (int)UnitType.NUM_UNIT_TYPES; i++)
         {
-            playerUnitCounts[i] = GameProperties.Instance.maxPlayerUnits[i] - m_unitManager.UnitsAvailable(true, i);
+            playerUnitCounts[i] = activeMaxPlayerUnits[i] - m_unitManager.UnitsAvailable(true, i);
         }
     }
     private void UpdateHUD()
@@ -217,6 +214,13 @@ public class GameController : MonoBehaviour
         }
         m_audio.Play();
     }
+    public void OnPlayerUnitKilled()
+    {
+        if (playerUnitsKilled++ % 5 == 0)
+        {
+            m_unitManager.AddUnitToQueue(false, Random.Range(0, (int)UnitType.NUM_UNIT_TYPES));
+        }
+    }
     public void CleanGame()
     {
         foreach (Unit unit in unitsInPlay)
@@ -239,5 +243,10 @@ public class GameController : MonoBehaviour
         {
             m_playerBase.TakeDamage(-dropValue);
         }
+    }
+    public void UpgradePlayerUnitLimit(int unitType)
+    {
+        activeMaxPlayerUnits[unitType]++;
+        m_unitManager.AddUnitToQueue(true, unitType);
     }
 }
