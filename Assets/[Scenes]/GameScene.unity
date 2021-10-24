@@ -404,8 +404,8 @@ MonoBehaviour:
   resourceDropPrefabs:
   - {fileID: 0}
   - {fileID: 0}
-  maxPlayerUnits: 0200000002000000020000000200000002000000
-  maxEnemyUnits: 0100000001000000010000000100000001000000
+  maxPlayerUnits: 0100000002000000010000000100000002000000
+  maxEnemyUnits: 0200000003000000010000000100000002000000
   unitCosts: 730000005000000082000000c80000005f000000
   spawnTimes:
   - 4
@@ -423,6 +423,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 8122e1853df6f41deb82676926699ed0, type: 3}
   - {fileID: 21300000, guid: af8edde230dc344fab5f2ab09c2819b2, type: 3}
   - {fileID: 21300000, guid: ee0f90a30402e49558f2d5a6de608c1f, type: 3}
+  dropIcons:
+  - {fileID: 21300000, guid: e2e4e9e85ae3d104786f46ca967ddb4b, type: 3}
+  - {fileID: 21300000, guid: 50de43473c650c74287257842ff18130, type: 3}
   gunSFX:
   - {fileID: 8300000, guid: aef224c701389ef4b963f8d854c68e19, type: 3}
   - {fileID: 8300000, guid: 05e1154f06fa96545b48a756c8464d17, type: 3}
@@ -434,6 +437,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a33164b31d792cf47a3c8e631d1714cb, type: 3}
   - {fileID: 8300000, guid: 3ed24c982d4c83645bc56a8ebf2e236f, type: 3}
   - {fileID: 8300000, guid: d2a0f9da3b6ab9841bfea1c62666e5fc, type: 3}
+  resourceDrop: {fileID: 3785025932846640988, guid: c6e3b99ba1a14d741be18689ba555277, type: 3}
+  playerDropRate: 17.5
 --- !u!1 &39136576
 GameObject:
   m_ObjectHideFlags: 0
@@ -6418,11 +6423,13 @@ MonoBehaviour:
   m_fundsDisplay: {fileID: 1133737527}
   m_fundsAddDelay: 0.57
   m_enemySpawnDelayMod: 0
+  m_playerBase: {fileID: 0}
   m_friendlySpawnPoint: {fileID: 1597814046}
   m_enemySpawnPoint: {fileID: 1863349859}
   m_audio: {fileID: 0}
   m_enemySpawnDelay: 5
   m_gameInProgress: 0
+  activeMaxPlayerUnits: 0000000000000000000000000000000000000000
   playerUnitCounts: 0000000000000000000000000000000000000000
   unitsInPlay: []
 --- !u!4 &2038920107

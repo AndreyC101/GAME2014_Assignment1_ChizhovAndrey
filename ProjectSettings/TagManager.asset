@@ -13,7 +13,7 @@ TagManager:
   - UI
   - Friendlies
   - Enemies
-  - 
+  - Drops
   - 
   - 
   - 
@@ -47,6 +47,6 @@ TagManager:
   - name: Enemies
     uniqueID: 3718945971
     locked: 0
-  - name: Effects
+  - name: Drops
     uniqueID: 3533399935
     locked: 0

@@ -36,6 +36,9 @@ public class GameController : MonoBehaviour
     public float m_fundsAddDelay;
     public float m_enemySpawnDelayMod = 0;
 
+    [SerializeField]
+    private HomeBase m_playerBase;
+
     //spawn transforms
     public Transform m_friendlySpawnPoint;
     public Transform m_enemySpawnPoint;
@@ -60,9 +63,12 @@ public class GameController : MonoBehaviour
     private MenuControl m_menuController;
     private UnitManager m_unitManager;
 
+    [SerializeField]
+    public int[] activeMaxPlayerUnits = new int[(int)UnitType.NUM_UNIT_TYPES];
     public int[] playerUnitCounts = new int[(int)UnitType.NUM_UNIT_TYPES];
     public List<Unit> unitsInPlay = new List<Unit>();
 
+    private int m_resourceDropsLayerMask = 1 << 8;
     void Start()
     {
         m_camera = FindObjectOfType<Camera>();
@@ -71,15 +77,14 @@ public class GameController : MonoBehaviour
         m_unitManager = GetComponent<UnitManager>();
         m_fundsDisplay.color = GameProperties.Instance.textColors[(int)TextType.VALID];
     }
-
     public void OnStartGame()
     {
+        GameProperties.Instance.maxPlayerUnits.CopyTo(activeMaxPlayerUnits, 0);
         m_gameInProgress = true;
         m_audio.clip = GameProperties.Instance.menuMusic[1];
         m_audio.Play();
         StartCoroutine("InitiateEnemySpawn");
     }
-
     void FixedUpdate()
     {
         if (!m_gameInProgress) return;
@@ -91,12 +96,10 @@ public class GameController : MonoBehaviour
     {
         UpdateTouchInput();
     }
-
     public void SpawnUnit(UnitType type, bool friendly)
     {
         unitsInPlay.Add(m_unitManager.GetUnit(friendly, (int)type, friendly ? m_friendlySpawnPoint : m_enemySpawnPoint).GetComponent<Unit>());
     }
-
     IEnumerator InitiateEnemySpawn()
     {
         UnitType enemyToSpawn;
@@ -114,7 +117,6 @@ public class GameController : MonoBehaviour
         StartCoroutine(ExecuteEnemySpawn(enemyToSpawn, spawnDelay));
         StopCoroutine("InitiateEnemySpawn");
     }
-
     IEnumerator ExecuteEnemySpawn(UnitType type, float spawnDelay)
     {
         yield return new WaitForSeconds(spawnDelay);
@@ -126,7 +128,6 @@ public class GameController : MonoBehaviour
         }
         StartCoroutine("InitiateEnemySpawn");
     }
-
     private void GetUnitCounts()
     {
         for (int i = 0; i < (int)UnitType.NUM_UNIT_TYPES; i++)
@@ -134,12 +135,10 @@ public class GameController : MonoBehaviour
             playerUnitCounts[i] = GameProperties.Instance.maxPlayerUnits[i] - m_unitManager.UnitsAvailable(true, i);
         }
     }
-
     private void UpdateHUD()
     {
         m_fundsDisplay.text = m_playerFunds.ToString();
     }
-
     public void OnBaseDestroyed(bool friendly)
     {
         foreach (Unit unit in unitsInPlay)
@@ -174,12 +173,15 @@ public class GameController : MonoBehaviour
         {
             m_touchEnd = Input.GetTouch(0).position;
             Ray ray = m_camera.ScreenPointToRay(m_touchEnd);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, m_resourceDropsLayerMask);
+            Debug.Log("Raycasting touch position");
+            if (hit)
             {
+                Debug.Log("Raycast hit");
                 ResourceDrop drop = hit.transform.gameObject.GetComponent<ResourceDrop>();
                 if (drop)
                 {
+                    Debug.Log("Drop Detected");
                     drop.OnPickedUp();
                 }
             }
@@ -187,10 +189,9 @@ public class GameController : MonoBehaviour
             float swipeDistance = m_touchEnd.x - m_touchStart.x;
             Vector2 cameraAcceleration = new Vector2((-swipeDistance) / 50, 0f);
             m_camera.GetComponent<Rigidbody2D>().AddForce(cameraAcceleration, ForceMode2D.Impulse);
-            Debug.Log($"Swipe of {swipeDistance} units detected");
+            //Debug.Log($"Swipe of {swipeDistance} units detected");
         }
     }
-
     private void TryEarnFunds()
     {
         if (Time.time < timeOfLastFundsAdded + m_fundsAddDelay || fundsAddBlocked)
@@ -200,7 +201,6 @@ public class GameController : MonoBehaviour
         timeOfLastFundsAdded = Time.time;
         m_playerFunds += 1;
     }
-
     private void OnGameOver()
     {
         CleanGame();
@@ -217,7 +217,6 @@ public class GameController : MonoBehaviour
         }
         m_audio.Play();
     }
-
     public void CleanGame()
     {
         foreach (Unit unit in unitsInPlay)
@@ -227,11 +226,18 @@ public class GameController : MonoBehaviour
     }
     public void TrySpawnResourceDrop(Vector3 position)
     {
-        
+        float rand = Random.Range(0, 100f);
+        if (rand < GameProperties.Instance.playerDropRate)
+        {
+            GameObject drop = Instantiate(GameProperties.Instance.resourceDrop, position, Quaternion.identity);
+            drop.GetComponent<ResourceDrop>().OnSpawn();
+        }
     }
-
     public void RepairBase(float dropValue)
     {
-
+        if (m_playerBase)
+        {
+            m_playerBase.TakeDamage(-dropValue);
+        }
     }
 }

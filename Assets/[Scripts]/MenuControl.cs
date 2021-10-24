@@ -35,7 +35,8 @@ public class MenuControl : MonoBehaviour
                 else SwitchToMenu(MenuType.PAUSE);
             }
         }
-        m_HUD.GetComponent<Canvas>().enabled = Time.timeScale == 0 ? false : true;
+        if (m_HUD.GetComponent<Canvas>())
+            m_HUD.GetComponent<Canvas>().enabled = Time.timeScale == 0 ? false : true;
     }
 
     public void SwitchToMenu(MenuType menu)

@@ -92,8 +92,17 @@ public class GameProperties : MonoBehaviour
     public Sprite[] unitIcons = new Sprite[(int)UnitType.NUM_UNIT_TYPES];
 
     [SerializeField]
+    public Sprite[] dropIcons = new Sprite[(int)ResourceDropType.NUM_RESOURCE_DROP_TYPES];
+
+    [SerializeField]
     public AudioClip[] gunSFX = new AudioClip[(int)UnitType.NUM_UNIT_TYPES];
 
     [SerializeField]
     public AudioClip[] menuMusic = new AudioClip[4];
+
+    [SerializeField]
+    public GameObject resourceDrop;
+
+    [SerializeField]
+    public float playerDropRate = 0;
 }

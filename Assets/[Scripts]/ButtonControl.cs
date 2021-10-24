@@ -37,7 +37,7 @@ public class ButtonControl : MonoBehaviour
         m_unitIcon.sprite = GameProperties.Instance.unitIcons[(int)m_unitSpawnType];
         m_spawnTime = GameProperties.Instance.spawnTimes[(int)m_unitSpawnType];
         m_unitCost = GameProperties.Instance.unitCosts[(int)m_unitSpawnType];
-        m_unitLimit = GameProperties.Instance.maxPlayerUnits[(int)m_unitSpawnType];
+        m_unitLimit = GameController.Instance.activeMaxPlayerUnits[(int)m_unitSpawnType];
 
         //setup extra UI elements
         m_costIcon = transform.Find("MoneyIcon");
@@ -54,13 +54,14 @@ public class ButtonControl : MonoBehaviour
 
     private void Update()
     {
+        m_unitLimit = GameController.Instance.activeMaxPlayerUnits[(int)m_unitSpawnType];
         UpdateDisplay();
     }
 
     public void OnPressed()
     {
         if (spawnAvailable && GameController.Instance.m_playerFunds >= m_unitCost && 
-            GameController.Instance.playerUnitCounts[(int)m_unitSpawnType] < GameProperties.Instance.maxPlayerUnits[(int)m_unitSpawnType])
+            GameController.Instance.playerUnitCounts[(int)m_unitSpawnType] < GameController.Instance.activeMaxPlayerUnits[(int)m_unitSpawnType])
         {
             spawnAvailable = false;
             timeOfBeginSpawn = Time.time;
@@ -96,10 +97,12 @@ public class ButtonControl : MonoBehaviour
                 m_loadingBarFill.rectTransform.sizeDelta = new Vector2(maxSize.rect.width * fillPerc, maxSize.rect.height);
             }
         }
+        //set cost color to red if funds insufficient
         if (GameController.Instance.m_playerFunds < GameProperties.Instance.unitCosts[(int)m_unitSpawnType])
             m_costText.color = GameProperties.Instance.textColors[(int)TextType.INVALID];
         else m_costText.color = GameProperties.Instance.textColors[(int)TextType.VALID];
-        if (GameController.Instance.playerUnitCounts[(int)m_unitSpawnType] >= GameProperties.Instance.maxPlayerUnits[(int)m_unitSpawnType])
+
+        if (GameController.Instance.playerUnitCounts[(int)m_unitSpawnType] >= GameController.Instance.activeMaxPlayerUnits[(int)m_unitSpawnType])
             m_unitCountText.color = GameProperties.Instance.textColors[(int)TextType.INVALID];
         else m_unitCountText.color = GameProperties.Instance.textColors[(int)TextType.VALID];
         m_unitCountText.text = $"{GameController.Instance.playerUnitCounts[(int)m_unitSpawnType]} / {m_unitLimit}";
