@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// </summary>
 public class HomeBase : MonoBehaviour, IDamageable
 {
-    public float m_maxBaseHealth = 800;
+    public float m_maxBaseHealth;
     private float m_baseHealth;
 
     public Transform m_healthBar;
@@ -24,13 +24,17 @@ public class HomeBase : MonoBehaviour, IDamageable
     void Start()
     {
         m_game = FindObjectOfType<GameController>();
-        m_baseHealth = m_maxBaseHealth;
         m_healthBarFill = m_healthBar.transform.Find("HealthBar");
 
         m_hqSign.sortingLayerName = "Friendlies";
         m_hqSign.sortingOrder = 3;
     }
 
+    public void OnGameStart()
+    {
+        m_baseHealth = m_maxBaseHealth;
+        UpdateUI();
+    }
     void UpdateUI()
     {
         float fillPerc = m_baseHealth / m_maxBaseHealth;

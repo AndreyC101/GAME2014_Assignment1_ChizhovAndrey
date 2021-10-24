@@ -9,6 +9,8 @@ using UnityEngine.SceneManagement;
 /// Controls game flow outside the menus, spawns enemies and handles victory and defeat conditions, implemented as a singleton
 /// enemy units are spawned randomly on a timer. The timer depends on their spawn times found in gameproperties, and decreased based on how many units have already been spawned this game
 /// the player earns currency at a rate of the same bpm as the gamestate music
+/// enemy pools now expand based on how many friendly units are killed
+/// enemies now drop resources to either give cash, repair base health, or upgrade a random unit capacity
 /// </summary>
 public class GameController : MonoBehaviour
 {
@@ -39,6 +41,9 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private HomeBase m_playerBase;
 
+    [SerializeField]
+    private HomeBase m_enemyBase;
+
     //spawn transforms
     public Transform m_friendlySpawnPoint;
     public Transform m_enemySpawnPoint;
@@ -51,11 +56,11 @@ public class GameController : MonoBehaviour
     private Vector2 m_touchStart, m_touchEnd;
 
     //enemy control
-    private int enemyUnitsSpawned = 0;
-    public float m_enemySpawnDelay = 0.0f;
-    private float timeOfLastEnemySpawn = 0;
-    private float timeOfLastFundsAdded = 0;
-    private float playerUnitsKilled = 0;
+    private int enemyUnitsSpawned;
+    public float m_enemySpawnDelay;
+    private float timeOfLastEnemySpawn;
+    private float timeOfLastFundsAdded;
+    private float playerUnitsKilled;
 
     //gameplay flags
     public bool m_gameInProgress = false;
@@ -64,6 +69,8 @@ public class GameController : MonoBehaviour
     private MenuControl m_menuController;
     private UnitManager m_unitManager;
 
+    [SerializeField]
+    public int[] activeMaxEnemyUnits = new int[(int)UnitType.NUM_UNIT_TYPES];
     [SerializeField]
     public int[] activeMaxPlayerUnits = new int[(int)UnitType.NUM_UNIT_TYPES];
     public int[] playerUnitCounts = new int[(int)UnitType.NUM_UNIT_TYPES];
@@ -80,8 +87,21 @@ public class GameController : MonoBehaviour
     }
     public void OnStartGame()
     {
+        GameProperties.Instance.maxEnemyUnits.CopyTo(activeMaxEnemyUnits, 0);
         GameProperties.Instance.maxPlayerUnits.CopyTo(activeMaxPlayerUnits, 0);
+        m_unitManager.OnGameStart();
+        enemyUnitsSpawned = 0;
+        m_enemySpawnDelay = 0.0f;
+        timeOfLastEnemySpawn = 0;
+        timeOfLastFundsAdded = 0;
+        playerUnitsKilled = 0;
+        m_enemySpawnDelayMod = 0;
         m_gameInProgress = true;
+        m_playerVictory = false;
+        fundsAddBlocked = false;
+        m_playerFunds = 250;
+        m_playerBase.OnGameStart();
+        m_enemyBase.OnGameStart();
         m_audio.clip = GameProperties.Instance.menuMusic[1];
         m_audio.Play();
         StartCoroutine("InitiateEnemySpawn");
@@ -171,14 +191,11 @@ public class GameController : MonoBehaviour
             m_touchEnd = Input.GetTouch(0).position;
             Ray ray = m_camera.ScreenPointToRay(m_touchEnd);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, m_resourceDropsLayerMask);
-            Debug.Log("Raycasting touch position");
             if (hit)
             {
-                Debug.Log("Raycast hit");
                 ResourceDrop drop = hit.transform.gameObject.GetComponent<ResourceDrop>();
                 if (drop)
                 {
-                    Debug.Log("Drop Detected");
                     drop.OnPickedUp();
                 }
             }
@@ -200,7 +217,6 @@ public class GameController : MonoBehaviour
     }
     private void OnGameOver()
     {
-        CleanGame();
         if (m_playerVictory)
         {
             m_menuController.SwitchToMenu(MenuType.VICTORY);
@@ -223,10 +239,14 @@ public class GameController : MonoBehaviour
     }
     public void CleanGame()
     {
-        foreach (Unit unit in unitsInPlay)
+        if (unitsInPlay.Count > 0)
         {
-            m_unitManager.ReturnUnit(unit.gameObject);
+            foreach (Unit unit in unitsInPlay)
+            {
+                m_unitManager.ReturnUnit(unit.gameObject);
+            }
         }
+        m_unitManager.ClearQueues();
     }
     public void TrySpawnResourceDrop(Vector3 position)
     {

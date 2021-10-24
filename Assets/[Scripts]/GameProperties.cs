@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// GameProperties.cs - Andrey Chizhov - 101255069
-/// Central data pool used in different parts of the game
+/// Central data pool used in different parts of the game, including starter values
 /// all custom enums are located here
 /// </summary>
 public enum UnitType
@@ -41,6 +41,7 @@ public enum MenuType
     CONTROLS,
     VICTORY,
     DEFEAT,
+    UPGRADE,
     NUM_MENU_TYPES
 }
 
@@ -76,6 +77,9 @@ public class GameProperties : MonoBehaviour
 
     [SerializeField]
     public int[] maxEnemyUnits = new int[(int)UnitType.NUM_UNIT_TYPES];
+
+    [SerializeField]
+    public int[] capacityUpgradeCosts = new int[(int)UnitType.NUM_UNIT_TYPES];
 
     [SerializeField]
     public int[] unitCosts = new int[(int)UnitType.NUM_UNIT_TYPES];

@@ -1,3 +1,6 @@
+/*Andrey Chizhov - 101255069
+ * Object pool for units, organized by type and affiliation, each unit queue can be expanded
+ */
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +11,8 @@ public class UnitManager : MonoBehaviour
     private Queue<GameObject>[] m_playerUnits = new Queue<GameObject>[(int)UnitType.NUM_UNIT_TYPES];
     [SerializeField]
     private Queue<GameObject>[] m_enemyUnits = new Queue<GameObject>[(int)UnitType.NUM_UNIT_TYPES];
-    void Awake()
+
+    public void OnGameStart()
     {
         BuildUnitPools();
     }
@@ -17,18 +21,15 @@ public class UnitManager : MonoBehaviour
     {
         for (int i = 0; i < (int)UnitType.NUM_UNIT_TYPES; i++)
         {
-            Debug.Log($"Loading pool of {((UnitType)i).ToString()}");
             m_playerUnits[i] = new Queue<GameObject>();
-            Debug.Log($"Player {((UnitType)i).ToString()} pool created");
             m_enemyUnits[i] = new Queue<GameObject>();
-            Debug.Log($"Enemy {((UnitType)i).ToString()} pool created");
 
-            for (int j = 0; j < GameProperties.Instance.maxPlayerUnits[i]; j++)
+            for (int j = 0; j < GameController.Instance.activeMaxPlayerUnits[i]; j++)
             {
                 AddUnitToQueue(true, i);
             }
 
-            for (int j = 0; j < GameProperties.Instance.maxEnemyUnits[i]; j++)
+            for (int j = 0; j < GameController.Instance.activeMaxEnemyUnits[i]; j++)
             {
                 AddUnitToQueue(false, i);
             }
@@ -56,7 +57,7 @@ public class UnitManager : MonoBehaviour
         else m_enemyUnits[(int)unit.GetComponent<Unit>().m_type].Enqueue(unit);
     }
 
-    public void AddUnitToQueue(bool friendly, int type)
+    public void AddUnitToQueue(bool friendly, int type) //sorts by friendly and unit type
     {
         var newUnit = Instantiate(GameProperties.Instance.unitPrefabs[type]);
         newUnit.GetComponent<Unit>().m_friendly = friendly;
@@ -66,5 +67,25 @@ public class UnitManager : MonoBehaviour
         if (friendly)
             m_playerUnits[type].Enqueue(newUnit);
         else m_enemyUnits[type].Enqueue(newUnit);
+    }
+
+    public void ClearQueues() //deletes all game objects and clears references from queues
+    {
+        for (int i = 0; i < m_playerUnits.Length; i++)
+        {
+            foreach(GameObject unit in m_playerUnits[i])
+            {
+                Destroy(unit);
+            }
+            m_playerUnits[i].Clear();
+        }
+        for (int i = 0; i < m_enemyUnits.Length; i++)
+        {
+            foreach (GameObject unit in m_enemyUnits[i])
+            {
+                Destroy(unit);
+            }
+            m_enemyUnits[i].Clear();
+        }
     }
 }

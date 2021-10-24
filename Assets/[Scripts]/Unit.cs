@@ -5,6 +5,8 @@ using UnityEngine;
 /// <summary>
 /// Unit.cs - Andrey Chizhov - 101255069
 /// controls the friendly and enemy npcs, behavior depends on individual stats
+/// by default, units will raycast forward before moving, prompting an attack if raycast is hit
+/// managed by the unitmanager
 /// </summary>
 public class Unit : MonoBehaviour, IDamageable
 {

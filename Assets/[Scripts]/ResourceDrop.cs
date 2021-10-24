@@ -1,3 +1,7 @@
+/*Andrey Chizhov - 101255069
+ * Resource drops generates itself randomly upon spawning to either give currency, repair base health, or upgrade a random unit capacity
+ * drops will rise to the top of the screen and destruct upon reaching an upper boundary
+ */
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +20,7 @@ public class ResourceDrop : MonoBehaviour
     public void OnSpawn()
     {
         m_type = (ResourceDropType)Random.Range(0f, (int)ResourceDropType.NUM_RESOURCE_DROP_TYPES);
-        dropValue = Random.Range(20f, 100f);
+        dropValue = Random.Range(100f, 200f);
         m_sprite = GetComponent<SpriteRenderer>();
         m_sprite.sprite = GameProperties.Instance.dropIcons[(int)m_type];
     }
@@ -25,7 +29,7 @@ public class ResourceDrop : MonoBehaviour
         switch (m_type)
         {
             case ResourceDropType.BASE_HEALTH:
-                GameController.Instance.RepairBase(dropValue * 3.5f);
+                GameController.Instance.RepairBase(dropValue * 2f);
                 break;
             case ResourceDropType.CURRENCY:
                 GameController.Instance.m_playerFunds += (int)dropValue;

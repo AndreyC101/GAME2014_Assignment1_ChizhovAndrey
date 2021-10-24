@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// MenuControl.cs - Andrey Chizhov - 101255069
-/// Manages the menus and provides button functions
+/// Manages the menus and provides basic button functions
 /// </summary>
 public class MenuControl : MonoBehaviour
 {
@@ -14,20 +14,22 @@ public class MenuControl : MonoBehaviour
     public GameObject[] m_menuPanels = new GameObject[(int)MenuType.NUM_MENU_TYPES];
 
     public GameObject m_HUD;
-
-    private GameController m_game;
     void Start()
     {
-        m_game = GetComponent<GameController>();
-        m_game.m_audio.clip = GameProperties.Instance.menuMusic[0];
-        m_game.m_audio.Play();
+        OnStartNew();
+    }
+
+    void OnStartNew()
+    {
+        GameController.Instance.m_audio.clip = GameProperties.Instance.menuMusic[0];
+        GameController.Instance.m_audio.Play();
         m_HUD.GetComponent<Canvas>().enabled = false;
         SwitchToMenu(MenuType.MAIN);
     }
     void FixedUpdate()
     {
         m_HUD.GetComponent<Canvas>().enabled = Time.timeScale == 0 ? false : true;
-        if (m_game != null && m_game.m_gameInProgress)
+        if (GameController.Instance.m_gameInProgress)
         {
             if (Input.GetKey(KeyCode.Escape))
             {
@@ -56,19 +58,22 @@ public class MenuControl : MonoBehaviour
 
     public void BeginGame()
     {
-        m_game.OnStartGame();
+        GameController.Instance.OnStartGame();
         m_HUD.GetComponent<Canvas>().enabled = true;
         CloseAllMenus();
     }
 
     public void Quit()
     {
-        m_game.CleanGame();
         Application.Quit();
     }
 
 
     //FOR EDITOR
+    public void OnUpgradeButtonPressed()
+    {
+        SwitchToMenu(MenuType.UPGRADE);
+    }
     public void OnPauseButtonPressed()
     {
         SwitchToMenu(MenuType.PAUSE);
@@ -85,13 +90,15 @@ public class MenuControl : MonoBehaviour
 
     public void OnControlsReturnButtonPressed()
     {
-        if (m_game.m_gameInProgress)
+        if (GameController.Instance.m_gameInProgress)
             OnPauseButtonPressed();
         else SwitchToMenu(MenuType.MAIN);
     }
 
     public void OnRestartButtonPressed()
     {
-        SceneManager.LoadScene(0);
+        GameController.Instance.m_gameInProgress = false;
+        GameController.Instance.CleanGame();
+        OnStartNew();
     }
 }
